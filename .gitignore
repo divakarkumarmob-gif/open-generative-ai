@@ -38,4 +38,5 @@ out/
 !.env.example
 test-output.png
 *.part
+output/
 
