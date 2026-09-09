@@ -224,7 +224,7 @@ export default function LocalGeneratorPage() {
             <div style={{ maxWidth: '1050px', margin: '0 auto', background: '#0f172a', borderRadius: '20px', padding: '28px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.8)', border: '1px solid #1e293b' }}>
                 
                 {/* Header */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1e293b', paddingBottom: '16px', marginBottom: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1e293b', paddingBottom: '16px', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
                     <div>
                         <h1 style={{ fontSize: '24px', fontWeight: '800', background: 'linear-gradient(90deg, #38bdf8, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: 0 }}>
                             ⚡ Smart AI Image Studio (Auto-Enhanced)
@@ -233,9 +233,27 @@ export default function LocalGeneratorPage() {
                             Aap bas simple Hinglish ya English me idea likhein, AI khud best visual prompt banayega!
                         </p>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#064e3b', border: '1px solid #059669', color: '#34d399', padding: '6px 14px', borderRadius: '9999px', fontSize: '12px', fontWeight: '700' }}>
-                        <span style={{ width: '8px', height: '8px', backgroundColor: '#34d399', borderRadius: '50%', display: 'inline-block', boxShadow: '0 0 8px #34d399' }}></span>
-                        Offline Model Active
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <a
+                            href="https://colab.research.google.com/github/divakarkumarmob-gif/open-generative-ai/blob/main/colab/open_generative_ai_colab.ipynb"
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#f59e0b', color: '#000', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '700', textDecoration: 'none' }}
+                        >
+                            <span>⚡</span> Open in Colab (Free T4 GPU)
+                        </a>
+                        <a
+                            href="https://github.com/divakarkumarmob-gif/open-generative-ai/blob/main/kaggle/open_generative_ai_kaggle.ipynb"
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#20beff', color: '#000', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '700', textDecoration: 'none' }}
+                        >
+                            <span>🚀</span> Open in Kaggle (2x T4 GPU)
+                        </a>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#064e3b', border: '1px solid #059669', color: '#34d399', padding: '6px 12px', borderRadius: '9999px', fontSize: '12px', fontWeight: '700' }}>
+                            <span style={{ width: '8px', height: '8px', backgroundColor: '#34d399', borderRadius: '50%', display: 'inline-block', boxShadow: '0 0 8px #34d399' }}></span>
+                            Offline Model Ready
+                        </div>
                     </div>
                 </div>
 
