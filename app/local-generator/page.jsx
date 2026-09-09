@@ -1,12 +1,11 @@
 'use client';
 import { useState } from 'react';
 
-// Preset configurations for instant quality boost
 const STYLE_PRESETS = [
     {
         id: 'photorealistic',
         name: '📸 Ultra Realistic Photo',
-        positiveAdd: 'masterpiece, best quality, ultra-detailed, photorealistic, 8k uhd, dslr, soft lighting, sharp focus, 35mm lens, natural skin texture',
+        positiveAdd: 'masterpiece, best quality, ultra-detailed, photorealistic, 8k uhd, dslr, soft natural lighting, sharp focus, 35mm lens, natural skin texture',
         negativeAdd: 'cartoon, drawing, anime, 3d render, illustration, blurry, oversaturated, deformed, bad hands',
         steps: 25,
         guidance: 7.5,
@@ -29,7 +28,7 @@ const STYLE_PRESETS = [
     },
     {
         id: 'anime',
-        name: '🌸 Anime / Manga Masterpiece',
+        name: '🌸 Anime Masterpiece',
         positiveAdd: 'masterpiece, best quality, high quality anime aesthetic, vibrant colors, detailed lineart, stunning eyes, trending on pixiv, 4k',
         negativeAdd: 'photorealistic, real life, low quality, sketch, messy lines',
         steps: 22,
@@ -38,14 +37,13 @@ const STYLE_PRESETS = [
     {
         id: 'fantasy',
         name: '🧙‍♂️ Fantasy Art',
-        positiveAdd: 'epic fantasy art, magical glowing particles, highly detailed, concept art, trending on artstation, unreal engine 5 render, octane render, 8k',
+        positiveAdd: 'epic fantasy art, magical glowing particles, highly detailed, concept art, trending on artstation, unreal engine 5 render, 8k',
         negativeAdd: 'blurry, mundane, modern, lowres, deformed',
         steps: 25,
         guidance: 7.5,
     },
 ];
 
-// Hinglish to SD prompt dictionary & keyword expander
 const HINGLISH_DICT = {
     'ladki': 'young woman, 1girl',
     'aurat': 'mature woman, elegant female',
@@ -68,7 +66,10 @@ const HINGLISH_DICT = {
 };
 
 export default function LocalGeneratorPage() {
-    const [userIdea, setUserIdea] = useState('ek sundar ladki room me khadi hai');
+    const [engineMode, setEngineMode] = useState('pollinations'); // 'pollinations' or 'local'
+    const [polliModel, setPolliModel] = useState('flux');
+    
+    const [userIdea, setUserIdea] = useState('ek sundar ladki luxury room me');
     const [prompt, setPrompt] = useState('a stunning gorgeous young woman standing in a luxury modern bedroom, soft cinematic ambient lighting, masterpiece, ultra-detailed, 8k uhd, photorealistic');
     const [negativePrompt, setNegativePrompt] = useState('ugly, blurry, deformed hands, extra fingers, bad anatomy, low quality, watermark, cartoon');
     const [selectedStyle, setSelectedStyle] = useState('photorealistic');
@@ -89,19 +90,16 @@ export default function LocalGeneratorPage() {
     const [timeTaken, setTimeTaken] = useState('');
     const [liveLogs, setLiveLogs] = useState([]);
 
-    // Intelligent Prompt Builder function
     const enhancePromptFromIdea = (inputText, styleId = selectedStyle) => {
         let text = inputText.toLowerCase().trim();
         if (!text) return;
 
-        // 1. Translate Hinglish/Hindi keywords
         let translated = text;
         for (const [key, replacement] of Object.entries(HINGLISH_DICT)) {
             const regex = new RegExp(`\\b${key}\\b`, 'gi');
             translated = translated.replace(regex, replacement);
         }
 
-        // 2. Apply Style Preset enhancements
         const style = STYLE_PRESETS.find(s => s.id === styleId) || STYLE_PRESETS[0];
         const finalPrompt = `${translated}, ${style.positiveAdd}`;
         const finalNegative = `${negativePrompt ? negativePrompt + ', ' : ''}${style.negativeAdd}`;
@@ -146,8 +144,8 @@ export default function LocalGeneratorPage() {
         setTotalSteps(steps);
         setSpeedText('');
         setTimeTaken('');
-        setStatusMessage('Starting AI engine...');
-        setLiveLogs(['[Init] Initializing model inference...']);
+        setStatusMessage(engineMode === 'pollinations' ? 'Sending to Pollinations Free Cloud GPU...' : 'Starting local sd.cpp engine...');
+        setLiveLogs([`[Init] Mode: ${engineMode === 'pollinations' ? 'Pollinations (Cloud Zero-Key)' : 'Local Hardware'}`]);
 
         try {
             const response = await fetch('/api/local/generate', {
@@ -160,6 +158,8 @@ export default function LocalGeneratorPage() {
                     guidance: Number(guidance),
                     width: 512,
                     height: 512,
+                    provider: engineMode,
+                    model: polliModel,
                 }),
             });
 
@@ -200,7 +200,7 @@ export default function LocalGeneratorPage() {
                             setResultImage(data.url);
                             setPercent(100);
                             setTimeTaken(data.duration);
-                            setStatusMessage(`✅ Done in ${data.duration}!`);
+                            setStatusMessage(`✅ Done in ${data.duration}! (${data.model})`);
                             setLiveLogs(prev => [...prev.slice(-8), `[Finished] Image generated in ${data.duration}`]);
                         } else if (data.type === 'error') {
                             throw new Error(data.error);
@@ -227,35 +227,78 @@ export default function LocalGeneratorPage() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1e293b', paddingBottom: '16px', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
                     <div>
                         <h1 style={{ fontSize: '24px', fontWeight: '800', background: 'linear-gradient(90deg, #38bdf8, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: 0 }}>
-                            ⚡ Smart AI Image Studio (Auto-Enhanced)
+                            ⚡ Smart AI Image Studio
                         </h1>
                         <p style={{ color: '#94a3b8', fontSize: '13px', margin: '4px 0 0 0' }}>
-                            Aap bas simple Hinglish ya English me idea likhein, AI khud best visual prompt banayega!
+                            Pollinations (Free Instant Cloud) + 100% Offline Local Engine
                         </p>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <a
-                            href="https://colab.research.google.com/github/divakarkumarmob-gif/open-generative-ai/blob/main/colab/open_generative_ai_colab.ipynb"
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#f59e0b', color: '#000', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '700', textDecoration: 'none' }}
+
+                    {/* Engine Mode Selector */}
+                    <div style={{ display: 'flex', backgroundColor: '#090d16', padding: '4px', borderRadius: '10px', border: '1px solid #334155' }}>
+                        <button
+                            onClick={() => setEngineMode('pollinations')}
+                            style={{
+                                backgroundColor: engineMode === 'pollinations' ? '#2563eb' : 'transparent',
+                                color: engineMode === 'pollinations' ? '#ffffff' : '#94a3b8',
+                                border: 'none',
+                                padding: '8px 14px',
+                                borderRadius: '8px',
+                                fontSize: '12px',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                transition: 'all 0.15s',
+                            }}
                         >
-                            <span>⚡</span> Open in Colab (Free T4 GPU)
-                        </a>
-                        <a
-                            href="https://github.com/divakarkumarmob-gif/open-generative-ai/blob/main/kaggle/open_generative_ai_kaggle.ipynb"
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#20beff', color: '#000', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '700', textDecoration: 'none' }}
+                            ⚡ Pollinations (Fast 5s Free Cloud)
+                        </button>
+                        <button
+                            onClick={() => setEngineMode('local')}
+                            style={{
+                                backgroundColor: engineMode === 'local' ? '#7c3aed' : 'transparent',
+                                color: engineMode === 'local' ? '#ffffff' : '#94a3b8',
+                                border: 'none',
+                                padding: '8px 14px',
+                                borderRadius: '8px',
+                                fontSize: '12px',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                transition: 'all 0.15s',
+                            }}
                         >
-                            <span>🚀</span> Open in Kaggle (2x T4 GPU)
-                        </a>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#064e3b', border: '1px solid #059669', color: '#34d399', padding: '6px 12px', borderRadius: '9999px', fontSize: '12px', fontWeight: '700' }}>
-                            <span style={{ width: '8px', height: '8px', backgroundColor: '#34d399', borderRadius: '50%', display: 'inline-block', boxShadow: '0 0 8px #34d399' }}></span>
-                            Offline Model Ready
-                        </div>
+                            💻 Offline Local GPU (sd.cpp)
+                        </button>
                     </div>
                 </div>
+
+                {/* Pollinations Model Bar */}
+                {engineMode === 'pollinations' && (
+                    <div style={{ marginBottom: '18px', display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: '#131d36', padding: '10px 14px', borderRadius: '10px', border: '1px solid #1d4ed8' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#60a5fa' }}>🌟 Cloud Model:</span>
+                        {[
+                            { id: 'flux', label: 'Flux (Best Quality)' },
+                            { id: 'turbo', label: 'SDXL Turbo (Ultra Fast)' },
+                            { id: 'any-dark', label: 'Dark Aesthetic' }
+                        ].map((m) => (
+                            <button
+                                key={m.id}
+                                onClick={() => setPolliModel(m.id)}
+                                style={{
+                                    backgroundColor: polliModel === m.id ? '#3b82f6' : '#1e293b',
+                                    color: polliModel === m.id ? '#ffffff' : '#cbd5e1',
+                                    border: 'none',
+                                    padding: '5px 10px',
+                                    borderRadius: '6px',
+                                    fontSize: '11px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                {m.label}
+                            </button>
+                        ))}
+                    </div>
+                )}
 
                 {/* 1-Click Style Presets */}
                 <div style={{ marginBottom: '20px' }}>
@@ -286,7 +329,7 @@ export default function LocalGeneratorPage() {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: '24px' }}>
-                    {/* Left Column: Smart Input */}
+                    {/* Left Column */}
                     <div>
                         {/* Simple Idea Box */}
                         <div style={{ marginBottom: '16px', backgroundColor: '#090d16', padding: '16px', borderRadius: '12px', border: '1px solid #334155' }}>
@@ -306,7 +349,7 @@ export default function LocalGeneratorPage() {
                                 onChange={(e) => handleIdeaChange(e.target.value)}
                                 rows={2}
                                 style={{ width: '100%', backgroundColor: '#131b2e', border: '1px solid #475569', borderRadius: '8px', padding: '10px', color: '#f8fafc', fontSize: '14px', boxSizing: 'border-box' }}
-                                placeholder="Jaise: ek sundar ladki beach par sunset me..."
+                                placeholder="Jaise: ek sundar ladki room me khadi hai..."
                             />
 
                             {/* Quick 1-Click Modifier Tags */}
@@ -324,11 +367,11 @@ export default function LocalGeneratorPage() {
                             </div>
                         </div>
 
-                        {/* Generated AI Professional Prompt Preview (Collapsible / Editable) */}
+                        {/* Generated AI Professional Prompt */}
                         <div style={{ marginBottom: '16px' }}>
                             <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '6px' }}>
-                                <span>🤖 AI Enhanced Prompt (Engine input):</span>
-                                <span style={{ color: '#34d399', fontSize: '11px' }}>Auto-Tuned for High Quality</span>
+                                <span>🤖 Final Enhanced Prompt:</span>
+                                <span style={{ color: '#34d399', fontSize: '11px' }}>Auto-Tuned Quality</span>
                             </label>
                             <textarea
                                 value={prompt}
@@ -341,7 +384,7 @@ export default function LocalGeneratorPage() {
                         {/* Negative Prompt */}
                         <div style={{ marginBottom: '18px' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '6px' }}>
-                                🚫 Negative Prompt (Galtiyon ko rokne ke liye auto-set):
+                                🚫 Negative Prompt:
                             </label>
                             <textarea
                                 value={negativePrompt}
@@ -351,31 +394,13 @@ export default function LocalGeneratorPage() {
                             />
                         </div>
 
-                        {/* Sliders */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px', backgroundColor: '#090d16', padding: '12px', borderRadius: '10px' }}>
-                            <div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>
-                                    <span>Detail Steps:</span>
-                                    <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>{steps}</span>
-                                </div>
-                                <input type="range" min="10" max="40" value={steps} onChange={(e) => setSteps(e.target.value)} style={{ width: '100%', accentColor: '#38bdf8' }} />
-                            </div>
-                            <div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>
-                                    <span>Prompt Strictness (CFG):</span>
-                                    <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>{guidance}</span>
-                                </div>
-                                <input type="range" min="3" max="15" step="0.5" value={guidance} onChange={(e) => setGuidance(e.target.value)} style={{ width: '100%', accentColor: '#38bdf8' }} />
-                            </div>
-                        </div>
-
                         {/* Generate Button */}
                         <button
                             onClick={handleGenerate}
                             disabled={loading}
                             style={{
                                 width: '100%',
-                                background: loading ? '#334155' : 'linear-gradient(90deg, #2563eb, #7c3aed)',
+                                background: loading ? '#334155' : engineMode === 'pollinations' ? 'linear-gradient(90deg, #2563eb, #3b82f6)' : 'linear-gradient(90deg, #7c3aed, #9333ea)',
                                 color: '#ffffff',
                                 border: 'none',
                                 borderRadius: '10px',
@@ -386,7 +411,7 @@ export default function LocalGeneratorPage() {
                                 boxShadow: loading ? 'none' : '0 10px 20px -5px rgba(37, 99, 235, 0.5)',
                             }}
                         >
-                            {loading ? `⏳ Generating... (${percent}%)` : '🚀 Generate Image'}
+                            {loading ? `⏳ Generating... (${percent}%)` : engineMode === 'pollinations' ? '🚀 Generate on Cloud (Fast 5s)' : '💻 Generate on Local GPU'}
                         </button>
 
                         {/* LIVE PROGRESS SECTION */}
@@ -394,7 +419,7 @@ export default function LocalGeneratorPage() {
                             <div style={{ marginTop: '16px', padding: '14px', backgroundColor: '#090d16', borderRadius: '10px', border: '1px solid #38bdf8' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                                     <span style={{ fontSize: '12px', fontWeight: '700', color: '#38bdf8' }}>
-                                        {currentStep > 0 ? `Step ${currentStep} of ${totalSteps}` : 'Initializing Hardware...'}
+                                        {statusMessage || 'Processing...'}
                                     </span>
                                     <span style={{ fontSize: '13px', fontWeight: '800', color: '#f8fafc' }}>
                                         {percent}%
@@ -404,8 +429,7 @@ export default function LocalGeneratorPage() {
                                     <div style={{ width: `${percent}%`, height: '100%', background: 'linear-gradient(90deg, #38bdf8, #a855f7)', borderRadius: '9999px', transition: 'width 0.3s ease-in-out' }} />
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94a3b8' }}>
-                                    <span>{statusMessage}</span>
-                                    {speedText && <span style={{ color: '#a5b4fc', fontWeight: 'bold' }}>⚡ {speedText}</span>}
+                                    <span>{speedText ? `⚡ ${speedText}` : ''}</span>
                                 </div>
                             </div>
                         )}
@@ -417,7 +441,7 @@ export default function LocalGeneratorPage() {
                         )}
                     </div>
 
-                    {/* Right Column: Output Image */}
+                    {/* Right Column */}
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#090d16', borderRadius: '16px', border: '2px dashed #1e293b', minHeight: '450px', padding: '18px' }}>
                         {resultImage ? (
                             <div style={{ width: '100%', textAlign: 'center' }}>
@@ -432,7 +456,7 @@ export default function LocalGeneratorPage() {
                                         download={`image-${Date.now()}.png`}
                                         style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#10b981', color: '#ffffff', padding: '9px 18px', borderRadius: '8px', textDecoration: 'none', fontSize: '13px', fontWeight: '700' }}
                                     >
-                                        ⬇️ Download Full Quality PNG
+                                        ⬇️ Download PNG
                                     </a>
                                     {timeTaken && (
                                         <span style={{ fontSize: '11px', color: '#94a3b8', backgroundColor: '#1e293b', padding: '6px 10px', borderRadius: '6px' }}>
@@ -447,13 +471,13 @@ export default function LocalGeneratorPage() {
                                     <div>
                                         <div style={{ fontSize: '36px', marginBottom: '8px' }}>⚙️</div>
                                         <p style={{ color: '#38bdf8', fontSize: '14px', fontWeight: '600', margin: 0 }}>Rendering Image...</p>
-                                        <p style={{ color: '#64748b', fontSize: '12px', margin: '4px 0 0 0' }}>Step {currentStep}/{totalSteps} ({percent}%)</p>
+                                        <p style={{ color: '#64748b', fontSize: '12px', margin: '4px 0 0 0' }}>{statusMessage}</p>
                                     </div>
                                 ) : (
                                     <div>
                                         <span style={{ fontSize: '48px', display: 'block', marginBottom: '10px' }}>🖼️</span>
                                         <p style={{ margin: 0, fontSize: '14px', color: '#94a3b8', fontWeight: '600' }}>Image Yahan Dikhayi Degi</p>
-                                        <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#475569' }}>Idea likhein aur Generate dabayein</p>
+                                        <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#475569' }}>Pollinations (Fast) ya Local select karke Generate dabayein</p>
                                     </div>
                                 )}
                             </div>
