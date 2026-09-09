@@ -20,7 +20,7 @@ function parseStep(chunk) {
 export async function POST(request) {
     try {
         const body = await request.json();
-        const { prompt, negativePrompt = '', steps = 20, guidance = 7.5, width = 512, height = 512, provider = 'pollinations', model = 'flux' } = body;
+        const { prompt, negativePrompt = '', steps = 25, guidance = 7.5, width = 768, height = 1024, provider = 'pollinations', model = 'flux' } = body;
 
         if (!prompt) {
             return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
@@ -29,7 +29,7 @@ export async function POST(request) {
         const encoder = new TextEncoder();
         const startTime = Date.now();
 
-        // ─── 1. POLLINATIONS CLOUD FREE MODE (NO API KEY REQUIRED) ───
+        // ─── 1. POLLINATIONS CLOUD ENGINE (FLUX - NATURAL PROMPT) ───
         if (provider === 'pollinations') {
             const stream = new ReadableStream({
                 async start(controller) {
@@ -37,21 +37,22 @@ export async function POST(request) {
                         try { controller.enqueue(encoder.encode(JSON.stringify(data) + '\n')); } catch (e) {}
                     };
 
-                    sendEvent({ type: 'status', message: 'Connecting to Pollinations Free Cloud Engine...', percent: 15 });
+                    sendEvent({ type: 'status', message: 'Connecting to Flux Ultra-HD Engine...', percent: 20 });
 
                     try {
                         const seed = Math.floor(Math.random() * 2147483647);
-                        const cleanPrompt = encodeURIComponent(prompt + (negativePrompt ? ` (avoid: ${negativePrompt})` : ''));
-                        const polliUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?width=${width}&height=${height}&seed=${seed}&model=${model}&nologo=true`;
+                        // Clean URL without negative prompt contamination in positive text
+                        const cleanPrompt = encodeURIComponent(prompt.trim());
+                        const polliUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?width=${width}&height=${height}&seed=${seed}&model=${model}&nologo=true&enhance=true`;
 
-                        sendEvent({ type: 'status', message: 'Generating on Cloud GPU (Flux / SDXL)...', percent: 45 });
+                        sendEvent({ type: 'status', message: 'Generating 8K Photorealistic Image on GPU...', percent: 55 });
 
                         const fetchRes = await fetch(polliUrl);
                         if (!fetchRes.ok) {
-                            throw new Error(`Pollinations returned HTTP ${fetchRes.status}`);
+                            throw new Error(`Cloud engine returned HTTP ${fetchRes.status}`);
                         }
 
-                        sendEvent({ type: 'status', message: 'Processing image pixels...', percent: 85 });
+                        sendEvent({ type: 'status', message: 'Decoding Full HD Image...', percent: 90 });
 
                         const arrayBuf = await fetchRes.arrayBuffer();
                         const base64 = `data:image/jpeg;base64,${Buffer.from(arrayBuf).toString('base64')}`;
@@ -61,7 +62,7 @@ export async function POST(request) {
                             type: 'done',
                             url: base64,
                             seed,
-                            model: `Pollinations (${model})`,
+                            model: `Flux 8K (${model})`,
                             duration: `${duration}s`,
                             percent: 100
                         });
@@ -81,19 +82,19 @@ export async function POST(request) {
             });
         }
 
-        // ─── 2. LOCAL OFFLINE HARDWARE ENGINE (SD-CLI) ───
+        // ─── 2. LOCAL OFFLINE SD ENGINE ───
         const appData = process.env.APPDATA || (process.platform === 'darwin' ? path.join(os.homedir(), 'Library', 'Application Support') : path.join(os.homedir(), '.config'));
         const localAiDir = path.join(appData, 'open-generative-ai', 'local-ai');
         const binPath = path.join(localAiDir, 'bin', process.platform === 'win32' ? 'sd-cli.exe' : 'sd-cli');
         const modelsDir = path.join(localAiDir, 'models');
 
         if (!fs.existsSync(binPath)) {
-            return NextResponse.json({ error: 'sd-cli binary not found in ' + binPath }, { status: 500 });
+            return NextResponse.json({ error: 'sd-cli binary not found' }, { status: 500 });
         }
 
         const modelFiles = fs.readdirSync(modelsDir).filter(f => f.endsWith('.safetensors') || f.endsWith('.gguf') || f.endsWith('.ckpt'));
         if (modelFiles.length === 0) {
-            return NextResponse.json({ error: 'No local models found in ' + modelsDir }, { status: 404 });
+            return NextResponse.json({ error: 'No local models found' }, { status: 404 });
         }
 
         const modelPath = path.join(modelsDir, modelFiles[0]);
@@ -141,7 +142,7 @@ export async function POST(request) {
                     errOutput += str;
 
                     if (str.includes('loading tensors')) {
-                        sendEvent({ type: 'status', message: 'Tensors loaded. Starting sampling...', step: 0, total: steps, percent: 5 });
+                        sendEvent({ type: 'status', message: 'Tensors loaded. Sampling...', step: 0, total: steps, percent: 5 });
                     } else if (str.includes('decoding') || str.includes('decode_first_stage')) {
                         sendEvent({ type: 'status', message: 'Decoding VAE into full image...', step: steps, total: steps, percent: 95 });
                     }
