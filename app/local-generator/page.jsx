@@ -67,7 +67,7 @@ const HINGLISH_DICT = {
 };
 
 export default function LocalGeneratorPage() {
-    const [engineMode, setEngineMode] = useState('perchance'); // 'perchance', 'pollinations', or 'local'
+    const [engineMode, setEngineMode] = useState('pollinations');
     const [polliModel, setPolliModel] = useState('flux');
     
     const [selectedShot, setSelectedShot] = useState('full_body');
@@ -143,7 +143,7 @@ export default function LocalGeneratorPage() {
         setError(null);
         setPercent(0);
         setTimeTaken('');
-        setStatusMessage('Generating image...');
+        setStatusMessage('Generating 8K Photorealistic Image...');
 
         const [w, h] = resolution.split('x').map(Number);
 
@@ -156,7 +156,7 @@ export default function LocalGeneratorPage() {
                     negativePrompt,
                     width: w,
                     height: h,
-                    provider: engineMode === 'perchance' ? 'pollinations' : engineMode,
+                    provider: engineMode,
                     model: polliModel,
                 }),
             });
@@ -214,295 +214,256 @@ export default function LocalGeneratorPage() {
                 {/* Header */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1e293b', paddingBottom: '16px', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
                     <div>
-                        <h1 style={{ fontSize: '24px', fontWeight: '800', background: 'linear-gradient(90deg, #38bdf8, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: 0 }}>
-                            ⚡ AI Studio (Perchance & Cloud Integration)
+                        <h1 style={{ fontSize: '24px', fontWeight: '800', background: 'linear-gradient(90deg, #38bdf8, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: 0 }}>
+                            ⚡ Open Generative AI Studio
                         </h1>
                         <p style={{ color: '#94a3b8', fontSize: '13px', margin: '4px 0 0 0' }}>
-                            Perchance Live Studio + Flux 8K Cloud + Local Engine
+                            Flux 8K Realism (Direct Cloud) + 100% Offline Local Engine
                         </p>
                     </div>
 
-                    {/* Mode Selector */}
-                    <div style={{ display: 'flex', backgroundColor: '#090d16', padding: '4px', borderRadius: '10px', border: '1px solid #334155' }}>
-                        <button
-                            onClick={() => setEngineMode('perchance')}
-                            style={{
-                                backgroundColor: engineMode === 'perchance' ? '#ec4899' : 'transparent',
-                                color: engineMode === 'perchance' ? '#ffffff' : '#94a3b8',
-                                border: 'none',
-                                padding: '8px 14px',
-                                borderRadius: '8px',
-                                fontSize: '12px',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                            }}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        {/* Quick Perchance Popup */}
+                        <a
+                            href="https://perchance.org/ai-photo-generator"
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#ec4899', color: '#fff', padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: '700', textDecoration: 'none' }}
                         >
-                            🌐 Perchance Live Studio
-                        </button>
-                        <button
-                            onClick={() => { setEngineMode('pollinations'); setPolliModel('flux'); }}
-                            style={{
-                                backgroundColor: engineMode === 'pollinations' ? '#2563eb' : 'transparent',
-                                color: engineMode === 'pollinations' ? '#ffffff' : '#94a3b8',
-                                border: 'none',
-                                padding: '8px 14px',
-                                borderRadius: '8px',
-                                fontSize: '12px',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                            }}
-                        >
-                            ⚡ Flux 8K Cloud
-                        </button>
-                        <button
-                            onClick={() => setEngineMode('local')}
-                            style={{
-                                backgroundColor: engineMode === 'local' ? '#7c3aed' : 'transparent',
-                                color: engineMode === 'local' ? '#ffffff' : '#94a3b8',
-                                border: 'none',
-                                padding: '8px 14px',
-                                borderRadius: '8px',
-                                fontSize: '12px',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                            }}
-                        >
-                            💻 Offline Local GPU
-                        </button>
+                            <span>↗️</span> Open Perchance in Tab
+                        </a>
+
+                        {/* Engine Mode Toggle */}
+                        <div style={{ display: 'flex', backgroundColor: '#090d16', padding: '4px', borderRadius: '10px', border: '1px solid #334155' }}>
+                            <button
+                                onClick={() => { setEngineMode('pollinations'); setPolliModel('flux'); }}
+                                style={{
+                                    backgroundColor: engineMode === 'pollinations' ? '#2563eb' : 'transparent',
+                                    color: engineMode === 'pollinations' ? '#ffffff' : '#94a3b8',
+                                    border: 'none',
+                                    padding: '8px 14px',
+                                    borderRadius: '8px',
+                                    fontSize: '12px',
+                                    fontWeight: '700',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                ⚡ Flux 8K Cloud (Instant)
+                            </button>
+                            <button
+                                onClick={() => setEngineMode('local')}
+                                style={{
+                                    backgroundColor: engineMode === 'local' ? '#7c3aed' : 'transparent',
+                                    color: engineMode === 'local' ? '#ffffff' : '#94a3b8',
+                                    border: 'none',
+                                    padding: '8px 14px',
+                                    borderRadius: '8px',
+                                    fontSize: '12px',
+                                    fontWeight: '700',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                💻 Offline Local GPU
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                {/* Perchance Direct Live Embedded Frame */}
-                {engineMode === 'perchance' ? (
-                    <div>
-                        <div style={{ marginBottom: '16px', backgroundColor: '#1e1b4b', padding: '12px 18px', borderRadius: '12px', border: '1px solid #4338ca', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-                            <div>
-                                <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#f472b6' }}>🌐 Perchance AI Photo Generator Live Stream</span>
-                                <p style={{ color: '#cbd5e1', fontSize: '12px', margin: '2px 0 0 0' }}>
-                                    Yeh Perchance ka exact unfiltered AI engine hai — seedha yahan prompt daalein aur 100% same output dekhein!
-                                </p>
-                            </div>
-                            <a
-                                href="https://perchance.org/ai-photo-generator"
-                                target="_blank"
-                                rel="noreferrer"
-                                style={{ backgroundColor: '#ec4899', color: '#ffffff', padding: '6px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', textDecoration: 'none' }}
+                {/* Shot Framing Bar */}
+                <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', backgroundColor: '#1e1b4b', padding: '10px 16px', borderRadius: '12px', border: '1px solid #4338ca', flexWrap: 'wrap', gap: '10px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#a5b4fc' }}>📷 Camera Angle:</span>
+                    {SHOT_TYPES.map((st) => (
+                        <button
+                            key={st.id}
+                            onClick={() => handleShotChange(st.id)}
+                            style={{
+                                backgroundColor: selectedShot === st.id ? '#6366f1' : '#0f172a',
+                                color: selectedShot === st.id ? '#ffffff' : '#cbd5e1',
+                                border: selectedShot === st.id ? '1px solid #a5b4fc' : '1px solid #312e81',
+                                padding: '7px 14px',
+                                borderRadius: '8px',
+                                fontSize: '12px',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            {st.name}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Resolution Bar */}
+                <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', backgroundColor: '#131e36', padding: '12px 16px', borderRadius: '12px', border: '1px solid #1e3a8a', flexWrap: 'wrap', gap: '12px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#93c5fd' }}>📐 Resolution:</span>
+                    {[
+                        { id: '768x1024', label: '📱 768x1024 (HD Full Body)' },
+                        { id: '1024x1024', label: '🖼️ 1024x1024 (Ultra Square)' },
+                        { id: '1024x768', label: '🎬 1024x768 (Landscape)' }
+                    ].map((res) => (
+                        <button
+                            key={res.id}
+                            onClick={() => setResolution(res.id)}
+                            style={{
+                                backgroundColor: resolution === res.id ? '#3b82f6' : '#1e293b',
+                                color: resolution === res.id ? '#ffffff' : '#cbd5e1',
+                                border: 'none',
+                                padding: '6px 12px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            {res.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* 1-Click Style Presets */}
+                <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#94a3b8', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        🎨 Style Presets:
+                    </label>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        {STYLE_PRESETS.map((preset) => (
+                            <button
+                                key={preset.id}
+                                onClick={() => handleStyleChange(preset.id)}
+                                style={{
+                                    backgroundColor: selectedStyle === preset.id ? '#2563eb' : '#1e293b',
+                                    color: selectedStyle === preset.id ? '#ffffff' : '#cbd5e1',
+                                    border: selectedStyle === preset.id ? '1px solid #60a5fa' : '1px solid #334155',
+                                    padding: '8px 14px',
+                                    borderRadius: '8px',
+                                    fontSize: '13px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                }}
                             >
-                                ↗️ Open Full Screen in New Tab
-                            </a>
-                        </div>
-
-                        {/* Interactive Embedded Perchance Frame */}
-                        <div style={{ width: '100%', height: '720px', borderRadius: '14px', overflow: 'hidden', border: '2px solid #334155', backgroundColor: '#000' }}>
-                            <iframe
-                                src="https://perchance.org/ai-photo-generator"
-                                style={{ width: '100%', height: '100%', border: 'none' }}
-                                title="Perchance AI Photo Generator"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads"
-                            />
-                        </div>
+                                {preset.name}
+                            </button>
+                        ))}
                     </div>
-                ) : (
-                    /* Other Modes (Flux 8K / Local) */
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: '24px' }}>
+                    {/* Left Column */}
                     <div>
-                        {/* Shot Framing Bar */}
-                        <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', backgroundColor: '#1e1b4b', padding: '10px 16px', borderRadius: '12px', border: '1px solid #4338ca', flexWrap: 'wrap', gap: '10px' }}>
-                            <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#a5b4fc' }}>📷 Camera Angle:</span>
-                            {SHOT_TYPES.map((st) => (
+                        <div style={{ marginBottom: '16px', backgroundColor: '#090d16', padding: '16px', borderRadius: '12px', border: '1px solid #334155' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                <label style={{ fontSize: '13px', fontWeight: '700', color: '#38bdf8' }}>
+                                    ✍️ Apna Idea Likhein (Hinglish/English):
+                                </label>
                                 <button
-                                    key={st.id}
-                                    onClick={() => handleShotChange(st.id)}
-                                    style={{
-                                        backgroundColor: selectedShot === st.id ? '#6366f1' : '#0f172a',
-                                        color: selectedShot === st.id ? '#ffffff' : '#cbd5e1',
-                                        border: selectedShot === st.id ? '1px solid #a5b4fc' : '1px solid #312e81',
-                                        padding: '7px 14px',
-                                        borderRadius: '8px',
-                                        fontSize: '12px',
-                                        fontWeight: '700',
-                                        cursor: 'pointer',
-                                    }}
+                                    onClick={handleMagicEnhance}
+                                    style={{ background: 'linear-gradient(90deg, #9333ea, #ec4899)', color: '#fff', border: 'none', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}
                                 >
-                                    {st.name}
+                                    ✨ Auto-Enhance
                                 </button>
-                            ))}
-                        </div>
+                            </div>
+                            <textarea
+                                value={userIdea}
+                                onChange={(e) => handleIdeaChange(e.target.value)}
+                                rows={2}
+                                style={{ width: '100%', backgroundColor: '#131b2e', border: '1px solid #475569', borderRadius: '8px', padding: '10px', color: '#f8fafc', fontSize: '14px', boxSizing: 'border-box' }}
+                                placeholder="Jaise: ek sundar ladki poori body luxury bedroom me..."
+                            />
 
-                        {/* Resolution Bar */}
-                        <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', backgroundColor: '#131e36', padding: '12px 16px', borderRadius: '12px', border: '1px solid #1e3a8a', flexWrap: 'wrap', gap: '12px' }}>
-                            <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#93c5fd' }}>📐 Resolution:</span>
-                            {[
-                                { id: '768x1024', label: '📱 768x1024 (HD Full Body)' },
-                                { id: '1024x1024', label: '🖼️ 1024x1024 (Ultra Square)' },
-                                { id: '1024x768', label: '🎬 1024x768 (Landscape)' }
-                            ].map((res) => (
-                                <button
-                                    key={res.id}
-                                    onClick={() => setResolution(res.id)}
-                                    style={{
-                                        backgroundColor: resolution === res.id ? '#3b82f6' : '#1e293b',
-                                        color: resolution === res.id ? '#ffffff' : '#cbd5e1',
-                                        border: 'none',
-                                        padding: '6px 12px',
-                                        borderRadius: '6px',
-                                        fontSize: '11px',
-                                        fontWeight: '600',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    {res.label}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* 1-Click Style Presets */}
-                        <div style={{ marginBottom: '20px' }}>
-                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#94a3b8', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                🎨 Style Presets:
-                            </label>
-                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                {STYLE_PRESETS.map((preset) => (
+                            <div style={{ marginTop: '10px', display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+                                <span style={{ fontSize: '11px', color: '#64748b' }}>Quick Add:</span>
+                                {['Sharp Natural Eyes', 'Natural Skin Pores', 'Head to Toe View', 'Standing Pose', 'Studio Lighting', 'Uncensored'].map((tag) => (
                                     <button
-                                        key={preset.id}
-                                        onClick={() => handleStyleChange(preset.id)}
-                                        style={{
-                                            backgroundColor: selectedStyle === preset.id ? '#2563eb' : '#1e293b',
-                                            color: selectedStyle === preset.id ? '#ffffff' : '#cbd5e1',
-                                            border: selectedStyle === preset.id ? '1px solid #60a5fa' : '1px solid #334155',
-                                            padding: '8px 14px',
-                                            borderRadius: '8px',
-                                            fontSize: '13px',
-                                            fontWeight: '600',
-                                            cursor: 'pointer',
-                                        }}
+                                        key={tag}
+                                        onClick={() => addTag(tag)}
+                                        style={{ backgroundColor: '#1e293b', border: '1px solid #334155', color: '#94a3b8', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', cursor: 'pointer' }}
                                     >
-                                        {preset.name}
+                                        + {tag}
                                     </button>
                                 ))}
                             </div>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: '24px' }}>
-                            {/* Left Column */}
-                            <div>
-                                <div style={{ marginBottom: '16px', backgroundColor: '#090d16', padding: '16px', borderRadius: '12px', border: '1px solid #334155' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                                        <label style={{ fontSize: '13px', fontWeight: '700', color: '#38bdf8' }}>
-                                            ✍️ Apna Idea Likhein (Hinglish/English):
-                                        </label>
-                                        <button
-                                            onClick={handleMagicEnhance}
-                                            style={{ background: 'linear-gradient(90deg, #9333ea, #ec4899)', color: '#fff', border: 'none', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}
-                                        >
-                                            ✨ Auto-Enhance
-                                        </button>
-                                    </div>
-                                    <textarea
-                                        value={userIdea}
-                                        onChange={(e) => handleIdeaChange(e.target.value)}
-                                        rows={2}
-                                        style={{ width: '100%', backgroundColor: '#131b2e', border: '1px solid #475569', borderRadius: '8px', padding: '10px', color: '#f8fafc', fontSize: '14px', boxSizing: 'border-box' }}
-                                        placeholder="Jaise: ek sundar ladki poori body luxury bedroom me..."
-                                    />
-
-                                    <div style={{ marginTop: '10px', display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-                                        <span style={{ fontSize: '11px', color: '#64748b' }}>Quick Add:</span>
-                                        {['Sharp Natural Eyes', 'Natural Skin Pores', 'Head to Toe View', 'Standing Pose', 'Studio Lighting', 'Uncensored'].map((tag) => (
-                                            <button
-                                                key={tag}
-                                                onClick={() => addTag(tag)}
-                                                style={{ backgroundColor: '#1e293b', border: '1px solid #334155', color: '#94a3b8', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', cursor: 'pointer' }}
-                                            >
-                                                + {tag}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div style={{ marginBottom: '16px' }}>
-                                    <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '6px' }}>
-                                        <span>🤖 Final Prompt:</span>
-                                    </label>
-                                    <textarea
-                                        value={prompt}
-                                        onChange={(e) => setPrompt(e.target.value)}
-                                        rows={3}
-                                        style={{ width: '100%', backgroundColor: '#090d16', border: '1px solid #334155', borderRadius: '8px', padding: '10px', color: '#cbd5e1', fontSize: '12px', fontFamily: 'monospace', boxSizing: 'border-box' }}
-                                    />
-                                </div>
-
-                                <button
-                                    onClick={handleGenerate}
-                                    disabled={loading}
-                                    style={{
-                                        width: '100%',
-                                        background: loading ? '#334155' : 'linear-gradient(90deg, #2563eb, #7c3aed)',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        borderRadius: '10px',
-                                        padding: '15px',
-                                        fontSize: '16px',
-                                        fontWeight: '700',
-                                        cursor: loading ? 'not-allowed' : 'pointer',
-                                    }}
-                                >
-                                    {loading ? `⏳ Rendering (${percent}%)` : '🚀 Generate Image'}
-                                </button>
-
-                                {loading && (
-                                    <div style={{ marginTop: '16px', padding: '14px', backgroundColor: '#090d16', borderRadius: '10px', border: '1px solid #38bdf8' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                                            <span style={{ fontSize: '12px', fontWeight: '700', color: '#38bdf8' }}>{statusMessage || 'Rendering...'}</span>
-                                            <span style={{ fontSize: '13px', fontWeight: '800', color: '#f8fafc' }}>{percent}%</span>
-                                        </div>
-                                        <div style={{ width: '100%', height: '8px', backgroundColor: '#1e293b', borderRadius: '9999px', overflow: 'hidden' }}>
-                                            <div style={{ width: `${percent}%`, height: '100%', background: 'linear-gradient(90deg, #38bdf8, #10b981)', borderRadius: '9999px', transition: 'width 0.3s ease' }} />
-                                        </div>
-                                    </div>
-                                )}
-
-                                {error && (
-                                    <div style={{ marginTop: '14px', padding: '10px', backgroundColor: '#450a0a', border: '1px solid #991b1b', borderRadius: '8px', color: '#fecaca', fontSize: '12px' }}>
-                                        ⚠️ {error}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Right Column */}
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#090d16', borderRadius: '16px', border: '2px dashed #1e293b', minHeight: '480px', padding: '18px' }}>
-                                {resultImage ? (
-                                    <div style={{ width: '100%', textAlign: 'center' }}>
-                                        <img
-                                            src={resultImage}
-                                            alt="Generated Result"
-                                            style={{ maxWidth: '100%', maxHeight: '460px', borderRadius: '12px', objectFit: 'contain', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.8)', border: '1px solid #334155' }}
-                                        />
-                                        <div style={{ marginTop: '14px', display: 'flex', justifyContent: 'center', gap: '10px', alignItems: 'center' }}>
-                                            <a
-                                                href={resultImage}
-                                                download={`generated-${Date.now()}.png`}
-                                                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#10b981', color: '#ffffff', padding: '9px 18px', borderRadius: '8px', textDecoration: 'none', fontSize: '13px', fontWeight: '700' }}
-                                            >
-                                                ⬇️ Download Full Resolution PNG
-                                            </a>
-                                            {timeTaken && (
-                                                <span style={{ fontSize: '11px', color: '#94a3b8', backgroundColor: '#1e293b', padding: '6px 10px', borderRadius: '6px' }}>
-                                                    ⏱️ {timeTaken}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div style={{ textAlign: 'center', color: '#475569' }}>
-                                        <span style={{ fontSize: '48px', display: 'block', marginBottom: '10px' }}>📸</span>
-                                        <p style={{ margin: 0, fontSize: '14px', color: '#94a3b8', fontWeight: '600' }}>Image Yahan Dikhayi Degi</p>
-                                    </div>
-                                )}
-                            </div>
+                        <div style={{ marginBottom: '16px' }}>
+                            <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '6px' }}>
+                                <span>🤖 Final Prompt:</span>
+                            </label>
+                            <textarea
+                                value={prompt}
+                                onChange={(e) => setPrompt(e.target.value)}
+                                rows={3}
+                                style={{ width: '100%', backgroundColor: '#090d16', border: '1px solid #334155', borderRadius: '8px', padding: '10px', color: '#cbd5e1', fontSize: '12px', fontFamily: 'monospace', boxSizing: 'border-box' }}
+                            />
                         </div>
+
+                        <button
+                            onClick={handleGenerate}
+                            disabled={loading}
+                            style={{
+                                width: '100%',
+                                background: loading ? '#334155' : 'linear-gradient(90deg, #2563eb, #7c3aed)',
+                                color: '#ffffff',
+                                border: 'none',
+                                borderRadius: '10px',
+                                padding: '15px',
+                                fontSize: '16px',
+                                fontWeight: '700',
+                                cursor: loading ? 'not-allowed' : 'pointer',
+                            }}
+                        >
+                            {loading ? `⏳ Rendering (${percent}%)` : '🚀 Generate Image'}
+                        </button>
+
+                        {loading && (
+                            <div style={{ marginTop: '16px', padding: '14px', backgroundColor: '#090d16', borderRadius: '10px', border: '1px solid #38bdf8' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                                    <span style={{ fontSize: '12px', fontWeight: '700', color: '#38bdf8' }}>{statusMessage || 'Rendering...'}</span>
+                                    <span style={{ fontSize: '13px', fontWeight: '800', color: '#f8fafc' }}>{percent}%</span>
+                                </div>
+                                <div style={{ width: '100%', height: '8px', backgroundColor: '#1e293b', borderRadius: '9999px', overflow: 'hidden' }}>
+                                    <div style={{ width: `${percent}%`, height: '100%', background: 'linear-gradient(90deg, #38bdf8, #10b981)', borderRadius: '9999px', transition: 'width 0.3s ease' }} />
+                                </div>
+                            </div>
+                        )}
+
+                        {error && (
+                            <div style={{ marginTop: '14px', padding: '10px', backgroundColor: '#450a0a', border: '1px solid #991b1b', borderRadius: '8px', color: '#fecaca', fontSize: '12px' }}>
+                                ⚠️ {error}
+                            </div>
+                        )}
                     </div>
-                )}
+
+                    {/* Right Column */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#090d16', borderRadius: '16px', border: '2px dashed #1e293b', minHeight: '480px', padding: '18px' }}>
+                        {resultImage ? (
+                            <div style={{ width: '100%', textAlign: 'center' }}>
+                                <img
+                                    src={resultImage}
+                                    alt="Generated Result"
+                                    style={{ maxWidth: '100%', maxHeight: '460px', borderRadius: '12px', objectFit: 'contain', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.8)', border: '1px solid #334155' }}
+                                />
+                                <div style={{ marginTop: '14px', display: 'flex', justifyContent: 'center', gap: '10px', alignItems: 'center' }}>
+                                    <a
+                                        href={resultImage}
+                                        download={`generated-${Date.now()}.png`}
+                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#10b981', color: '#ffffff', padding: '9px 18px', borderRadius: '8px', textDecoration: 'none', fontSize: '13px', fontWeight: '700' }}
+                                    >
+                                        ⬇️ Download Full Resolution PNG
+                                    </a>
+                                    {timeTaken && (
+                                        <span style={{ fontSize: '11px', color: '#94a3b8', backgroundColor: '#1e293b', padding: '6px 10px', borderRadius: '6px' }}>
+                                            ⏱️ {timeTaken}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                        ) : (
+                            <div style={{ textAlign: 'center', color: '#475569' }}>
+                                <span style={{ fontSize: '48px', display: 'block', marginBottom: '10px' }}>📸</span>
+                                <p style={{ margin: 0, fontSize: '14px', color: '#94a3b8', fontWeight: '600' }}>Image Yahan Dikhayi Degi</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );
