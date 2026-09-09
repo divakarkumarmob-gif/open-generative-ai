@@ -4,35 +4,27 @@ import { useState } from 'react';
 const STYLE_PRESETS = [
     {
         id: 'photorealistic',
-        name: '📸 Crystal Clear DSLR 8K',
-        positiveAdd: 'masterpiece, best quality, ultra-detailed, highly realistic photography, 8k uhd, dslr, 35mm lens, sharp focus, natural skin texture, perfect studio lighting',
-        negativeAdd: 'cartoon, drawing, anime, 3d render, illustration, blurry, oversaturated, deformed, bad hands, extra limbs, 4 hands, duplicate, missing fingers',
-        steps: 28,
+        name: '📸 Ultra Realistic DSLR 8K',
+        positiveAdd: 'masterpiece, best quality, ultra-detailed, highly realistic photography, 8k uhd, dslr, 50mm lens, sharp focus, (detailed beautiful symmetrical face, sharp clear sparkling eyes, natural realistic lips:1.3), (natural skin texture, visible subtle skin pores:1.2), soft studio lighting, high resolution',
+        negativeAdd: 'cartoon, drawing, anime, 3d render, illustration, blurry face, distorted eyes, bad pupils, deformed face, melting face, plastic skin, airbrushed, oversaturated, deformed hands, extra limbs, duplicate, low quality',
+        steps: 30,
         guidance: 7.5,
     },
     {
         id: 'glamour',
-        name: '🔥 Ultra Glamour & Body Art',
-        positiveAdd: 'masterpiece, highly detailed, gorgeous, alluring, studio lighting, sensual, elegant pose, seductive expression, realistic body anatomy, 8k, highly aesthetic',
-        negativeAdd: 'ugly, deformed, disfigured, bad anatomy, lowres, blurry, cartoonish, extra limbs, extra hands, fused fingers, malformed',
-        steps: 28,
+        name: '🔥 Glamour & Photorealistic Art',
+        positiveAdd: 'masterpiece, highly detailed, gorgeous, alluring, studio lighting, sensual, elegant pose, seductive expression, (flawless detailed facial features, expressive sharp eyes:1.3), realistic female body anatomy, 8k, highly aesthetic',
+        negativeAdd: 'ugly, deformed, disfigured, bad anatomy, blurry face, distorted face, lowres, blurry, cartoonish, extra limbs, extra hands, fused fingers, malformed, plastic',
+        steps: 30,
         guidance: 7.0,
     },
     {
         id: 'cinematic',
         name: '🎬 4K Cinematic Shot',
-        positiveAdd: 'cinematic still, award winning cinematography, dramatic lighting, anamorphic lens, 8k resolution, photorealistic, depth of field, atmospheric, sharp details',
-        negativeAdd: 'amateur, bad framing, low quality, flat lighting, painting, sketch, deformed body',
+        positiveAdd: 'cinematic still, award winning cinematography, dramatic lighting, anamorphic lens, 8k resolution, photorealistic, (detailed expressive sharp face:1.3), depth of field, atmospheric, sharp details',
+        negativeAdd: 'amateur, bad framing, low quality, flat lighting, painting, sketch, deformed body, blurry face',
         steps: 30,
         guidance: 7.5,
-    },
-    {
-        id: 'anime',
-        name: '🌸 Perfect Anime / Manga',
-        positiveAdd: 'masterpiece, best quality, high quality anime aesthetic, vibrant colors, detailed lineart, stunning expressive eyes, perfect hands, trending on pixiv, 4k',
-        negativeAdd: 'photorealistic, real life, low quality, sketch, messy lines, bad fingers, extra hands',
-        steps: 25,
-        guidance: 8.0,
     },
 ];
 
@@ -40,20 +32,20 @@ const SHOT_TYPES = [
     {
         id: 'full_body',
         name: '🧍 Full Body (Head to Toe)',
-        positive: 'full body shot, complete head to toe view, standing pose, full length portrait, entire body visible from head to feet, wide shot, pulled back camera angle, shoes visible, floor visible',
+        positive: 'full body shot, complete head to toe view, standing pose, full length portrait, entire body visible from head to feet, (sharp detailed face:1.2), high definition, wide shot, pulled back camera angle, stylish shoes visible, floor visible',
         negative: 'close-up, cropped, zoomed in, headshot, bust shot, out of frame, cut off head, cut off legs, cropped feet, torso only',
     },
     {
         id: 'medium_shot',
         name: '💃 Medium Shot (Waist Up)',
-        positive: 'medium shot, waist up portrait, upper body shot, stylish pose, clear view of outfit and face',
+        positive: 'medium shot, waist up portrait, upper body shot, stylish pose, clear sharp view of outfit and (detailed face, sharp eyes:1.3)',
         negative: 'extreme close up, full body, cut off face, blurry',
     },
     {
         id: 'close_up',
         name: '📸 Close-up (Face Portrait)',
-        positive: 'close-up portrait, detailed face, expressive eyes, sharp facial features',
-        negative: 'full body, distant shot, wide angle, cropped face',
+        positive: 'close-up portrait, (extremely detailed face, sharp detailed eyes, natural skin pores, realistic lips:1.4), studio portrait lighting',
+        negative: 'full body, distant shot, wide angle, cropped face, blurry eyes',
     },
 ];
 
@@ -68,8 +60,8 @@ const HINGLISH_DICT = {
     'bina kapde': 'topless, uncensored, nude, bare skin',
     'kam kapde': 'revealing outfit, lingerie, bikini, cleavage',
     'kapde': 'stylish clothing, elegant dress',
-    'chehra': 'detailed face, expressive eyes, realistic lips, natural facial details',
-    'aankhein': 'detailed sparkling eyes, sharp focus, natural reflections',
+    'chehra': '(detailed sharp face, realistic lips, natural skin:1.3)',
+    'aankhein': '(sharp sparkling eyes, realistic pupils, high focus:1.3)',
     'baal': 'long detailed silky hair, strand by strand detail',
     'body': 'perfect female body anatomy, toned body, realistic proportions, smooth natural skin',
     'room': 'luxury bedroom, warm ambient interior lighting, rich interior decor',
@@ -80,25 +72,24 @@ const HINGLISH_DICT = {
     'full body': 'full body shot, entire body head to toe, feet visible',
 };
 
-const ANATOMY_POSITIVE = 'perfect human anatomy, correct body proportions, exactly two arms, exactly two legs, perfect detailed hands, accurate 5 fingers per hand, natural skin pores, high definition, crystal clear focus';
-const ANATOMY_NEGATIVE = 'extra hands, extra arms, four hands, multiple arms, extra legs, mutated hands, poorly drawn hands, malformed limbs, missing fingers, extra fingers, fused fingers, cloned body, duplicate person, bad anatomy, deformed body, disfigured, blurry, low resolution, pixelated, gross proportions';
+const ANATOMY_POSITIVE = '(perfect human anatomy, correct body proportions, exactly two arms, exactly two legs:1.2), (perfect detailed hands, accurate 5 fingers per hand:1.2), (crystal clear sharp detailed face, realistic eyes:1.3), natural skin pores, 8k uhd, sharp focus';
+const ANATOMY_NEGATIVE = 'blurry face, distorted face, deformed eyes, melting face, plastic skin, doll face, bad pupils, extra hands, extra arms, four hands, multiple arms, extra legs, mutated hands, poorly drawn hands, malformed limbs, missing fingers, extra fingers, fused fingers, cloned body, duplicate person, bad anatomy, deformed body, disfigured, blurry, low resolution, pixelated';
 
 export default function LocalGeneratorPage() {
     const [engineMode, setEngineMode] = useState('pollinations');
     const [polliModel, setPolliModel] = useState('flux');
     
-    // Shot framing and resolution
-    const [selectedShot, setSelectedShot] = useState('full_body'); // Default FULL BODY!
+    const [selectedShot, setSelectedShot] = useState('full_body');
     const [resolution, setResolution] = useState('768x1024');
     const [fixAnatomy, setFixAnatomy] = useState(true);
 
-    const [userIdea, setUserIdea] = useState('ek sundar ladki poori body luxury bedroom me khadi hai');
-    const [prompt, setPrompt] = useState('full body shot, complete head to toe view, standing pose, full length portrait, entire body visible from head to feet, a stunning gorgeous young woman standing in a luxury modern bedroom, soft cinematic ambient lighting, masterpiece, ultra-detailed, 8k uhd, photorealistic, perfect human anatomy, detailed hands');
+    const [userIdea, setUserIdea] = useState('ek sundar ladki poori body luxury bedroom me');
+    const [prompt, setPrompt] = useState('full body shot, complete head to toe view, standing pose, full length portrait, entire body visible, a stunning gorgeous young woman standing in a luxury modern bedroom, soft cinematic ambient lighting, (detailed beautiful face, sharp clear eyes:1.3), masterpiece, ultra-detailed, 8k uhd, photorealistic, perfect human anatomy, detailed hands');
     const [negativePrompt, setNegativePrompt] = useState(`close-up, cropped, zoomed in, headshot, bust shot, out of frame, cut off head, cut off legs, cropped feet, torso only, ${ANATOMY_NEGATIVE}`);
     const [selectedStyle, setSelectedStyle] = useState('photorealistic');
     const [autoEnhanceOn, setAutoEnhanceOn] = useState(true);
     
-    const [steps, setSteps] = useState(28);
+    const [steps, setSteps] = useState(30);
     const [guidance, setGuidance] = useState(7.5);
     const [loading, setLoading] = useState(false);
     const [resultImage, setResultImage] = useState(null);
@@ -167,7 +158,7 @@ export default function LocalGeneratorPage() {
         setError(null);
         setPercent(0);
         setTimeTaken('');
-        setStatusMessage('Rendering Full Body High-Definition Image...');
+        setStatusMessage('Rendering with High-Resolution Face & Body Sharpening...');
 
         const [w, h] = resolution.split('x').map(Number);
 
@@ -219,7 +210,7 @@ export default function LocalGeneratorPage() {
                             setResultImage(data.url);
                             setPercent(100);
                             setTimeTaken(data.duration);
-                            setStatusMessage(`✅ Full Body Image Ready in ${data.duration}!`);
+                            setStatusMessage(`✅ High-Definition Realism Complete in ${data.duration}!`);
                         } else if (data.type === 'error') {
                             throw new Error(data.error);
                         }
@@ -244,17 +235,17 @@ export default function LocalGeneratorPage() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1e293b', paddingBottom: '16px', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
                     <div>
                         <h1 style={{ fontSize: '24px', fontWeight: '800', background: 'linear-gradient(90deg, #38bdf8, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: 0 }}>
-                            ⚡ Crystal Clear AI Studio (Full Body + Anatomy Fix)
+                            ⚡ Ultra Realism Studio (Sharp Face & Full Body)
                         </h1>
                         <p style={{ color: '#94a3b8', fontSize: '13px', margin: '4px 0 0 0' }}>
-                            Full Head-to-Toe View • Perfect 2 Hands & Feet • 8K High Definition
+                            Crystal Clear Facial Features • Natural Skin • Perfect Head-to-Toe View
                         </p>
                     </div>
 
                     {/* Mode Selector */}
                     <div style={{ display: 'flex', backgroundColor: '#090d16', padding: '4px', borderRadius: '10px', border: '1px solid #334155' }}>
                         <button
-                            onClick={() => setEngineMode('pollinations')}
+                            onClick={() => { setEngineMode('pollinations'); setPolliModel('flux'); }}
                             style={{
                                 backgroundColor: engineMode === 'pollinations' ? '#2563eb' : 'transparent',
                                 color: engineMode === 'pollinations' ? '#ffffff' : '#94a3b8',
@@ -266,7 +257,7 @@ export default function LocalGeneratorPage() {
                                 cursor: 'pointer',
                             }}
                         >
-                            ⚡ Flux HD Cloud (Fast)
+                            ⚡ Flux Realism Engine (Ultra Sharp Face)
                         </button>
                         <button
                             onClick={() => setEngineMode('local')}
@@ -286,9 +277,9 @@ export default function LocalGeneratorPage() {
                     </div>
                 </div>
 
-                {/* Shot Framing & Camera Distance Bar */}
+                {/* Shot Framing Bar */}
                 <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', backgroundColor: '#1e1b4b', padding: '10px 16px', borderRadius: '12px', border: '1px solid #4338ca', flexWrap: 'wrap', gap: '10px' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#a5b4fc' }}>📷 Camera Angle / Framing:</span>
+                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#a5b4fc' }}>📷 Camera Shot:</span>
                     {SHOT_TYPES.map((st) => (
                         <button
                             key={st.id}
@@ -302,7 +293,6 @@ export default function LocalGeneratorPage() {
                                 fontSize: '12px',
                                 fontWeight: '700',
                                 cursor: 'pointer',
-                                transition: 'all 0.15s',
                             }}
                         >
                             {st.name}
@@ -310,15 +300,14 @@ export default function LocalGeneratorPage() {
                     ))}
                 </div>
 
-                {/* Anatomy Fixer & Resolution Bar */}
+                {/* Resolution & Face Guard Bar */}
                 <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#131e36', padding: '12px 16px', borderRadius: '12px', border: '1px solid #1e3a8a', flexWrap: 'wrap', gap: '12px' }}>
-                    {/* Resolution Selector */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#93c5fd' }}>📐 Aspect Ratio:</span>
+                        <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#93c5fd' }}>📐 Resolution:</span>
                         {[
-                            { id: '768x1024', label: '📱 Portrait HD (768x1024) [Best for Full Body]' },
-                            { id: '1024x1024', label: '🖼️ Square 1K (1024x1024)' },
-                            { id: '1024x768', label: '🎬 Landscape (1024x768)' }
+                            { id: '768x1024', label: '📱 768x1024 (HD Full Body)' },
+                            { id: '1024x1024', label: '🖼️ 1024x1024 (Ultra 1K)' },
+                            { id: '1024x768', label: '🎬 1024x768 (Wide)' }
                         ].map((res) => (
                             <button
                                 key={res.id}
@@ -339,7 +328,6 @@ export default function LocalGeneratorPage() {
                         ))}
                     </div>
 
-                    {/* Anatomy Guard Toggle */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <button
                             onClick={() => {
@@ -361,7 +349,7 @@ export default function LocalGeneratorPage() {
                                 cursor: 'pointer',
                             }}
                         >
-                            🖐️ Anatomy & Hands Guard: {fixAnatomy ? 'ACTIVE ✅' : 'OFF ❌'}
+                            👁️ Sharp Face & Hand Guard: {fixAnatomy ? 'ACTIVE ✅' : 'OFF ❌'}
                         </button>
                     </div>
                 </div>
@@ -406,7 +394,7 @@ export default function LocalGeneratorPage() {
                                     onClick={handleMagicEnhance}
                                     style={{ background: 'linear-gradient(90deg, #9333ea, #ec4899)', color: '#fff', border: 'none', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}
                                 >
-                                    ✨ Auto-Fix Full Body
+                                    ✨ Auto-Sharpen Details
                                 </button>
                             </div>
                             <textarea
@@ -414,13 +402,13 @@ export default function LocalGeneratorPage() {
                                 onChange={(e) => handleIdeaChange(e.target.value)}
                                 rows={2}
                                 style={{ width: '100%', backgroundColor: '#131b2e', border: '1px solid #475569', borderRadius: '8px', padding: '10px', color: '#f8fafc', fontSize: '14px', boxSizing: 'border-box' }}
-                                placeholder="Jaise: ek sundar ladki poori body luxury bedroom me khadi hai..."
+                                placeholder="Jaise: ek sundar ladki poori body luxury bedroom me..."
                             />
 
                             {/* Quick 1-Click Modifier Tags */}
                             <div style={{ marginTop: '10px', display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
                                 <span style={{ fontSize: '11px', color: '#64748b' }}>Quick Add:</span>
-                                {['Head to Toe View', 'Standing Pose', 'High Heels / Shoes', 'Sensual Lighting', 'Full Body Shot', 'Uncensored'].map((tag) => (
+                                {['Sharp Detailed Eyes', 'Realistic Skin Pores', 'Head to Toe View', 'Standing Pose', 'Studio Lighting', 'Uncensored'].map((tag) => (
                                     <button
                                         key={tag}
                                         onClick={() => addTag(tag)}
@@ -435,8 +423,8 @@ export default function LocalGeneratorPage() {
                         {/* Generated AI Professional Prompt */}
                         <div style={{ marginBottom: '16px' }}>
                             <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '6px' }}>
-                                <span>🤖 Final Full Body Prompt:</span>
-                                <span style={{ color: '#34d399', fontSize: '11px' }}>Includes Wide Angle & Feet Visibility</span>
+                                <span>🤖 Final High-Detail Prompt:</span>
+                                <span style={{ color: '#34d399', fontSize: '11px' }}>Includes Face & Texture Weights</span>
                             </label>
                             <textarea
                                 value={prompt}
@@ -449,7 +437,7 @@ export default function LocalGeneratorPage() {
                         {/* Negative Prompt */}
                         <div style={{ marginBottom: '18px' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '6px' }}>
-                                🚫 Negative Prompt (Close-up & Cut-off Blocking):
+                                🚫 Negative Prompt (Blur & Distortion Blocking):
                             </label>
                             <textarea
                                 value={negativePrompt}
@@ -465,7 +453,7 @@ export default function LocalGeneratorPage() {
                             disabled={loading}
                             style={{
                                 width: '100%',
-                                background: loading ? '#334155' : 'linear-gradient(90deg, #4f46e5, #7c3aed)',
+                                background: loading ? '#334155' : 'linear-gradient(90deg, #2563eb, #7c3aed)',
                                 color: '#ffffff',
                                 border: 'none',
                                 borderRadius: '10px',
@@ -473,10 +461,10 @@ export default function LocalGeneratorPage() {
                                 fontSize: '16px',
                                 fontWeight: '700',
                                 cursor: loading ? 'not-allowed' : 'pointer',
-                                boxShadow: loading ? 'none' : '0 10px 20px -5px rgba(79, 70, 229, 0.5)',
+                                boxShadow: loading ? 'none' : '0 10px 20px -5px rgba(37, 99, 235, 0.5)',
                             }}
                         >
-                            {loading ? `⏳ Rendering Full Body Image (${percent}%)` : '🚀 Generate Full Body Image'}
+                            {loading ? `⏳ Rendering Ultra Sharp Image (${percent}%)` : '🚀 Generate Ultra Sharp Image'}
                         </button>
 
                         {/* Live Progress */}
@@ -491,7 +479,7 @@ export default function LocalGeneratorPage() {
                                     </span>
                                 </div>
                                 <div style={{ width: '100%', height: '8px', backgroundColor: '#1e293b', borderRadius: '9999px', overflow: 'hidden' }}>
-                                    <div style={{ width: `${percent}%`, height: '100%', background: 'linear-gradient(90deg, #6366f1, #10b981)', borderRadius: '9999px', transition: 'width 0.3s ease' }} />
+                                    <div style={{ width: `${percent}%`, height: '100%', background: 'linear-gradient(90deg, #38bdf8, #10b981)', borderRadius: '9999px', transition: 'width 0.3s ease' }} />
                                 </div>
                             </div>
                         )}
@@ -515,10 +503,10 @@ export default function LocalGeneratorPage() {
                                 <div style={{ marginTop: '14px', display: 'flex', justifyContent: 'center', gap: '10px', alignItems: 'center' }}>
                                     <a
                                         href={resultImage}
-                                        download={`full-body-${Date.now()}.png`}
+                                        download={`sharp-realism-${Date.now()}.png`}
                                         style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#10b981', color: '#ffffff', padding: '9px 18px', borderRadius: '8px', textDecoration: 'none', fontSize: '13px', fontWeight: '700' }}
                                     >
-                                        ⬇️ Download Full Body PNG
+                                        ⬇️ Download Ultra HD PNG
                                     </a>
                                     {timeTaken && (
                                         <span style={{ fontSize: '11px', color: '#94a3b8', backgroundColor: '#1e293b', padding: '6px 10px', borderRadius: '6px' }}>
@@ -532,14 +520,14 @@ export default function LocalGeneratorPage() {
                                 {loading ? (
                                     <div>
                                         <div style={{ fontSize: '36px', marginBottom: '8px' }}>⚙️</div>
-                                        <p style={{ color: '#38bdf8', fontSize: '14px', fontWeight: '600', margin: 0 }}>Rendering Head to Toe View...</p>
-                                        <p style={{ color: '#64748b', fontSize: '12px', margin: '4px 0 0 0' }}>Full Body Framing Active</p>
+                                        <p style={{ color: '#38bdf8', fontSize: '14px', fontWeight: '600', margin: 0 }}>Rendering Facial Details & Pores...</p>
+                                        <p style={{ color: '#64748b', fontSize: '12px', margin: '4px 0 0 0' }}>Sharp Realism Guard Active</p>
                                     </div>
                                 ) : (
                                     <div>
-                                        <span style={{ fontSize: '48px', display: 'block', marginBottom: '10px' }}>🧍</span>
-                                        <p style={{ margin: 0, fontSize: '14px', color: '#94a3b8', fontWeight: '600' }}>Full Body Head-to-Toe Image</p>
-                                        <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#475569' }}>Camera: "Full Body (Head to Toe)" select kiya hua hai</p>
+                                        <span style={{ fontSize: '48px', display: 'block', marginBottom: '10px' }}>💎</span>
+                                        <p style={{ margin: 0, fontSize: '14px', color: '#94a3b8', fontWeight: '600' }}>Ultra Sharp Realism</p>
+                                        <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#475569' }}>Flux Realism Engine + Face & Eye Sharpening Active</p>
                                     </div>
                                 )}
                             </div>
